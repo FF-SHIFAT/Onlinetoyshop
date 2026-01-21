@@ -38,6 +38,16 @@ if (isset($_COOKIE['user_email'])) {
             cursor: pointer;
         }
     </style>
+    <script>
+        function showLoginPass() {
+            let pass = document.getElementById("login_pass");
+            if (pass.type === "password") {
+                pass.type = "text";
+            } else {
+                pass.type = "password";
+            }
+        }
+    </script>
 </head>
 <body>
 
@@ -52,6 +62,8 @@ if (isset($_COOKIE['user_email'])) {
                     unset($_SESSION['error_msg']);
                 ?>
             </div>
+        <?php endif; ?>
+        
         <?php if(isset($_SESSION['success'])): ?>
              <div class="alert alert-success" style="background:#d4edda; color:#155724; padding:10px; border-radius:5px; margin-bottom:15px;">
                 <?php 
@@ -59,7 +71,6 @@ if (isset($_COOKIE['user_email'])) {
                     unset($_SESSION['success']);
                 ?>
             </div>
-        <?php endif; ?>
         <?php endif; ?>
 
         <form action="../Controllers/authControl.php" method="POST">
@@ -71,7 +82,12 @@ if (isset($_COOKIE['user_email'])) {
 
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" required placeholder="Enter your password">
+                <input type="password" id="login_pass" name="password" required placeholder="Enter your password">
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: -10px; margin-bottom: 15px;">
+                <input type="checkbox" onclick="showLoginPass()" style="width: auto; cursor: pointer;"> 
+                <span style="font-size: 14px; color: #555;">Show Password</span>
             </div>
 
             <label class="remember-me-group">

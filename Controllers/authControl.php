@@ -7,11 +7,11 @@ if (isset($_POST['signup_btn'])) {
     $email = mysqli_real_escape_string($conn, htmlspecialchars($_POST['email']));
     $phone = mysqli_real_escape_string($conn, htmlspecialchars($_POST['phone']));
     $address = mysqli_real_escape_string($conn, htmlspecialchars($_POST['address']));
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $cpassword = mysqli_real_escape_string($conn, $_POST['cpassword']);
+    $password = $_POST['password'];
+    $cpassword = $_POST['cpassword'];
 
-    if (empty($name) || empty($email) || empty($password) || empty($address)) {
-        $_SESSION['error_msg'] = "All fields are required!";
+    if (strlen($password) < 8 || !preg_match("/[0-9]/", $password) || !preg_match("/[!@#$%^&*]/", $password)) {
+        $_SESSION['error_msg'] = "Password must be 8+ chars long and include at least one number and one special character (@#$%^&*)!";
         header("Location: ../Views/signup.php");
         exit();
     }
@@ -40,8 +40,8 @@ if (isset($_POST['signup_btn'])) {
             $sql_address = "INSERT INTO user_addresses (user_id, address_line, is_primary) VALUES ('$user_id', '$address', 1)";
             mysqli_query($conn, $sql_address);
 
-            $_SESSION['success_msg'] = "Registration Successful! Please Login.";
-            header("Location: ../Views/signup.php");
+            $_SESSION['success'] = "Registration Successful! Please Login.";
+            header("Location: ../Views/login.php");
             exit();
         } else {
             $_SESSION['error_msg'] = "Database Error: " . mysqli_error($conn);

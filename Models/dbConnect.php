@@ -1,26 +1,18 @@
 <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "toyshop_db";
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db_name = "toyshop_db";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-function dbConnect()
-{
-    global $host;
-    global $user;
-    global $pass;
-    global $db_name;
-
-    $conn = mysqli_connect($host, $user, $pass, $db_name);
-
-    if (!$conn) {
-        die("Connection Failed: " . mysqli_connect_error());
-    }
-    
-    return $conn;
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-$conn = dbConnect();
+$GLOBALS['site_config'] = [
+    'app_name' => ' ToyShop',
+    'currency' => 'Tk. '
+];
 
 ?>

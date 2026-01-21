@@ -51,7 +51,6 @@ if (isset($_POST['signup_btn'])) {
     }
 }
 
-
 if (isset($_POST['login_btn'])) {
 
     $email = mysqli_real_escape_string($conn, $_POST['email']);
@@ -74,6 +73,14 @@ if (isset($_POST['login_btn'])) {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['user_name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
+
+            if (isset($_POST['remember_me'])) {
+                setcookie("user_email", $email, time() + (86400 * 30), "/");
+            } else {
+                if(isset($_COOKIE['user_email'])){
+                    setcookie("user_email", "", time() - 3600, "/");
+                }
+            }
 
             if ($row['role'] == 'admin') {
                 header("Location: ../Views/Admin/dashboard.php");

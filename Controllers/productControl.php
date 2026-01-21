@@ -2,7 +2,7 @@
 session_start();
 require_once '../Models/dbConnect.php';
 
-if (isset($_POST['add_product_btn'])) {
+if (isset($_POST['add_product'])) {
     
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $category_id = mysqli_real_escape_string($conn, $_POST['category_id']);

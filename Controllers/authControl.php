@@ -1,4 +1,7 @@
 <?php
+ini_set('session.gc_maxlifetime', 604800); 
+session_set_cookie_params(604800); 
+
 session_start();
 require_once '../Models/dbConnect.php'; 
 
@@ -7,11 +10,17 @@ if (isset($_POST['signup_btn'])) {
     $email = mysqli_real_escape_string($conn, htmlspecialchars($_POST['email']));
     $phone = mysqli_real_escape_string($conn, htmlspecialchars($_POST['phone']));
     $address = mysqli_real_escape_string($conn, htmlspecialchars($_POST['address']));
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $cpassword = mysqli_real_escape_string($conn, $_POST['cpassword']);
+    $password = $_POST['password'];
+    $cpassword = $_POST['cpassword'];
 
     if (empty($name) || empty($email) || empty($password) || empty($address)) {
         $_SESSION['error_msg'] = "All fields are required!";
+        header("Location: ../Views/signup.php");
+        exit();
+    }
+
+    if (strlen($password) < 8 || !preg_match("/[0-9]/", $password) || !preg_match("/[!@#$%^&*]/", $password)) {
+        $_SESSION['error_msg'] = "Password must be 8+ chars long and include at least one number and one special character (@#$%^&*)!";
         header("Location: ../Views/signup.php");
         exit();
     }
@@ -36,12 +45,11 @@ if (isset($_POST['signup_btn'])) {
         
         if (mysqli_query($conn, $sql_user)) {
             $user_id = mysqli_insert_id($conn);
-
             $sql_address = "INSERT INTO user_addresses (user_id, address_line, is_primary) VALUES ('$user_id', '$address', 1)";
             mysqli_query($conn, $sql_address);
 
-            $_SESSION['success_msg'] = "Registration Successful! Please Login.";
-            header("Location: ../Views/signup.php");
+            $_SESSION['success'] = "Registration Successful! Please Login.";
+            header("Location: ../Views/login.php");
             exit();
         } else {
             $_SESSION['error_msg'] = "Database Error: " . mysqli_error($conn);
@@ -50,7 +58,6 @@ if (isset($_POST['signup_btn'])) {
         }
     }
 }
-
 
 if (isset($_POST['login_btn'])) {
 
@@ -75,6 +82,20 @@ if (isset($_POST['login_btn'])) {
             $_SESSION['user_name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
 
+            if (isset($_POST['remember_me'])) {
+                setcookie("user_email", $email, time() + (86400 * 7), "/");
+                $params = session_get_cookie_params();
+                setcookie(session_name(), session_id(), time() + (86400 * 7), $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+                
+            } else {
+                if(isset($_COOKIE['user_email'])){
+                    setcookie("user_email", "", time() - 3600, "/");
+                }
+
+                $params = session_get_cookie_params();
+                setcookie(session_name(), session_id(), 0, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+            }
+
             if ($row['role'] == 'admin') {
                 header("Location: ../Views/Admin/dashboard.php");
             } else {
@@ -94,6 +115,27 @@ if (isset($_POST['login_btn'])) {
     }
 }
 
+if (isset($_GET['logout'])) {
+    
+    session_unset();
+    session_destroy();
+
+    if (isset($_COOKIE['user_email'])) {
+        setcookie("user_email", "", time() - 3600, "/");
+    }
+
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+
+    header("Location: ../Views/login.php");
+    exit();
+}
+
 if (isset($_POST['reset_pass_btn'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
@@ -104,29 +146,19 @@ if (isset($_POST['reset_pass_btn'])) {
 
     if (mysqli_num_rows($result) == 1) {
         $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
-
         $update_sql = "UPDATE users SET password='$hashed_password' WHERE email='$email'";
         
         if (mysqli_query($conn, $update_sql)) {
-            $_SESSION['success'] = "Password updated successfully. Redirecting to Login page...";
+            $_SESSION['success'] = "Password updated successfully.";
             header("Location: ../Views/forgot_password.php"); 
         } else {
-            $_SESSION['error'] = "Something went wrong! Please try again.";
+            $_SESSION['error'] = "Something went wrong!";
             header("Location: ../Views/forgot_password.php");
         }
     } else {
         $_SESSION['error'] = "Email and Phone number do not match!";
         header("Location: ../Views/forgot_password.php");
     }
-    exit();
-}
-
-if (isset($_GET['logout'])) {
-    session_destroy();
-    unset($_SESSION['user_id']);
-    unset($_SESSION['user_name']);
-    unset($_SESSION['role']);
-    header("Location: ../Views/login.php");
     exit();
 }
 ?>

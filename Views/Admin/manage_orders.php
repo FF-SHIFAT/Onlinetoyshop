@@ -15,13 +15,49 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     <title>Manage Orders</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        body { background-color: #f4f6f9; }
-        .admin-header { background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: #2c3e50; color: white; min-height: 100vh; }
+        body { background-color: #f4f6f9; margin: 0; overflow: hidden; }
+        
+        .admin-header { 
+            background: #343a40; 
+            color: white; 
+            padding: 0 30px; 
+            height: 70px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .admin-container { display: flex; }
+        
+        .sidebar { 
+            width: 260px; 
+            background: #2c3e50; 
+            color: white; 
+            position: fixed; 
+            top: 70px; 
+            left: 0; 
+            bottom: 0;
+            overflow-y: auto;
+        }
+
         .sidebar a { display: block; color: #b8c7ce; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #3d566e; }
         .sidebar a:hover, .sidebar a.active { background: #1abc9c; color: white; border-left: 5px solid #16a085; }
-        .main-content { flex: 1; padding: 30px; }
+        
+        .main-content { 
+            flex: 1; 
+            padding: 30px; 
+            margin-top: 70px; 
+            margin-left: 260px; 
+            height: calc(100vh - 70px); 
+            overflow-y: auto; 
+            box-sizing: border-box;
+        }
         
         .tabs { margin-bottom: 20px; }
         .tab-btn { padding: 10px 20px; border: none; background: #ddd; cursor: pointer; font-weight: bold; border-radius: 20px; margin-right: 5px; transition: 0.3s; }
@@ -41,22 +77,22 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         .btn-view { background: #3498db; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; margin-right: 5px; }
         .btn-update { background: #34495e; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal { display: none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: white; margin: 5% auto; padding: 25px; border-radius: 8px; width: 50%; position: relative; max-height: 80vh; overflow-y: auto; }
         .close-btn { position: absolute; top: 10px; right: 20px; font-size: 25px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="admin-header" style="background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <h2>Admin Panel</h2>
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
-            Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
-        </a>
-        <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+    <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
+                Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
+            </a>
+            <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+        </div>
     </div>
-</div>
 
     <div class="admin-container">
         <div class="sidebar">
@@ -65,7 +101,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             <a href="add_product.php">Add New Product</a>
             <a href="view_products.php">Manage Products</a>
             <a href="manage_orders.php" class="active">Orders</a>
-            <a href="manage_payments.php">Payment Gateway</a> <a href="manage_users.php">Registered Users</a>
+            <a href="manage_payments.php">Payment Gateway</a>
+            <a href="manage_users.php">Registered Users</a>
         </div>
 
         <div class="main-content">
@@ -84,17 +121,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Amount</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
+                        <th>Order ID</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="orderTableBody">
-                    </tbody>
+                <tbody id="orderTableBody"></tbody>
             </table>
         </div>
     </div>
@@ -128,57 +158,33 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            loadOrders('new', document.querySelector('.tab-btn.active'));
-        });
-
+        document.addEventListener("DOMContentLoaded", function() { loadOrders('new', document.querySelector('.tab-btn.active')); });
         function loadOrders(status, btn) {
             let buttons = document.querySelectorAll('.tab-btn');
             for(let i=0; i<buttons.length; i++) buttons[i].classList.remove('active');
             if(btn) btn.classList.add('active');
 
-            // AJAX Call
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "../../Controllers/orderControl.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            
-            xhr.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("orderTableBody").innerHTML = this.responseText;
-                }
-            };
+            xhr.onreadystatechange = function() { if (this.readyState == 4 && this.status == 200) { document.getElementById("orderTableBody").innerHTML = this.responseText; } };
             xhr.send("action=fetch_orders&status=" + status);
         }
-
         function viewOrder(id) {
             document.getElementById('detailsModal').style.display = 'block';
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "../../Controllers/orderControl.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            
-            xhr.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("order_details_body").innerHTML = this.responseText;
-                }
-            };
+            xhr.onreadystatechange = function() { if (this.readyState == 4 && this.status == 200) { document.getElementById("order_details_body").innerHTML = this.responseText; } };
             xhr.send("action=get_order_details&order_id=" + id);
         }
-
         function updateStatus(id, currentStatus) {
             document.getElementById('status_order_id').value = id;
             document.getElementById('status_select').value = currentStatus;
             document.getElementById('statusModal').style.display = 'block';
         }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
-        }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) { event.target.style.display = "none"; } }
     </script>
 </body>
 </html>

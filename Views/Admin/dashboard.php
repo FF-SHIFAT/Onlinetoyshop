@@ -22,13 +22,49 @@ $product_res = mysqli_query($conn, $product_sql);
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        body { background-color: #f4f6f9; margin: 0; font-family: sans-serif; }
-        .admin-header { background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: #2c3e50; color: white; min-height: 100vh; }
+        body { background-color: #f4f6f9; margin: 0; font-family: sans-serif; overflow: hidden; }
+        
+        .admin-header { 
+            background: #343a40; 
+            color: white; 
+            padding: 0 30px; 
+            height: 70px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .admin-container { display: flex; }
+        
+        .sidebar { 
+            width: 260px; 
+            background: #2c3e50; 
+            color: white; 
+            position: fixed; 
+            top: 70px; 
+            left: 0; 
+            bottom: 0;
+            overflow-y: auto;
+        }
+
         .sidebar a { display: block; color: #b8c7ce; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #3d566e; }
         .sidebar a:hover, .sidebar a.active { background: #1abc9c; color: white; border-left: 5px solid #16a085; }
-        .main-content { flex: 1; padding: 30px; }
+        
+        .main-content { 
+            flex: 1; 
+            padding: 30px; 
+            margin-top: 70px; 
+            margin-left: 260px; 
+            height: calc(100vh - 70px); 
+            overflow-y: auto; 
+            box-sizing: border-box;
+        }
         
         .dashboard-cards { display: flex; gap: 20px; margin-bottom: 40px; }
         .card { flex: 1; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; }
@@ -55,15 +91,15 @@ $product_res = mysqli_query($conn, $product_sql);
 </head>
 <body>
 
-    <div class="admin-header" style="background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <h2>Admin Panel</h2>
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
-            Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
-        </a>
-        <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+    <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
+                Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
+            </a>
+            <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+        </div>
     </div>
-</div>
 
     <div class="admin-container">
         <div class="sidebar">

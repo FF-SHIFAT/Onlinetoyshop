@@ -18,27 +18,37 @@ $result = mysqli_query($conn, $sql);
     <title>Manage Categories</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        body { 
-            background-color: #f4f6f9; 
-        }
+        body { background-color: #f4f6f9; margin: 0; overflow: hidden; }
+        
         .admin-header { 
             background: #343a40; 
             color: white; 
-            padding: 15px 30px; 
+            padding: 0 30px; 
+            height: 70px;
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
         }
-        .admin-container { 
-            display: flex; 
-            min-height: 100vh; 
-        }
+
+        .admin-container { display: flex; }
+        
         .sidebar { 
             width: 260px; 
             background: #2c3e50; 
             color: white; 
-            min-height: 100vh; 
+            position: fixed; 
+            top: 70px; 
+            left: 0; 
+            bottom: 0;
+            overflow-y: auto;
         }
+        
         .sidebar a { 
             display: block; 
             color: #b8c7ce; 
@@ -51,9 +61,15 @@ $result = mysqli_query($conn, $sql);
             color: white; 
             border-left: 5px solid #16a085; 
         }
+        
         .main-content { 
             flex: 1; 
             padding: 30px; 
+            margin-top: 70px; 
+            margin-left: 260px; 
+            height: calc(100vh - 70px); 
+            overflow-y: auto; 
+            box-sizing: border-box;
         }
         
         .data-table { 
@@ -76,7 +92,7 @@ $result = mysqli_query($conn, $sql);
         .modal { 
             display: none; 
             position: fixed; 
-            z-index: 1000; 
+            z-index: 1100; 
             left: 0; 
             top: 0; 
             width: 100%; 
@@ -102,6 +118,7 @@ $result = mysqli_query($conn, $sql);
         .close-btn:hover { 
             color: red; 
         }
+        
         .form-group { 
             margin-bottom: 15px; 
         }
@@ -110,6 +127,7 @@ $result = mysqli_query($conn, $sql);
             padding: 10px; 
             border: 1px solid #ddd; 
             border-radius: 4px; 
+            box-sizing: border-box; 
         }
         .btn-submit { 
             background: #1abc9c; 
@@ -140,25 +158,26 @@ $result = mysqli_query($conn, $sql);
 </head>
 <body>
 
-    <div class="admin-header" style="background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <h2>Admin Panel</h2>
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
-            Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
-        </a>
-        <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+    <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
+                Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
+            </a>
+            <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+        </div>
     </div>
-</div>
 
     <div class="admin-container">
-    <div class="sidebar">
-    <a href="dashboard.php">Dashboard</a>
-    <a href="manage_categories.php">Manage Categories</a>
-    <a href="add_product.php">Add New Product</a>
-    <a href="view_products.php">Manage Products</a>
-    <a href="manage_orders.php">Orders</a>
-    <a href="manage_payments.php">Payment Gateway</a> <a href="manage_users.php">Registered Users</a>
-    </div>
+        <div class="sidebar">
+            <a href="dashboard.php">Dashboard</a>
+            <a href="manage_categories.php" class="active">Manage Categories</a>
+            <a href="add_product.php">Add New Product</a>
+            <a href="view_products.php">Manage Products</a>
+            <a href="manage_orders.php">Orders</a>
+            <a href="manage_payments.php">Payment Gateway</a>
+            <a href="manage_users.php">Registered Users</a>
+        </div>
 
         <div class="main-content">
             <div style="display:flex; justify-content:space-between;">
@@ -224,25 +243,14 @@ $result = mysqli_query($conn, $sql);
     </div>
 
     <script>
-        function openAddModal() {
-            document.getElementById('addModal').style.display = 'block';
-        }
-
+        function openAddModal() { document.getElementById('addModal').style.display = 'block'; }
         function openEditModal(id, name) {
             document.getElementById('edit_cat_id').value = id;
             document.getElementById('edit_cat_name').value = name;
             document.getElementById('editModal').style.display = 'block';
         }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
-        }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) { event.target.style.display = "none"; } }
     </script>
 </body>
 </html>

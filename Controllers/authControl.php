@@ -83,7 +83,6 @@ if (isset($_POST['login_btn'])) {
             $_SESSION['role'] = $row['role'];
 
             if (isset($_POST['remember_me'])) {
-                
                 setcookie("user_email", $email, time() + (86400 * 7), "/");
                 $params = session_get_cookie_params();
                 setcookie(session_name(), session_id(), time() + (86400 * 7), $params["path"], $params["domain"], $params["secure"], $params["httponly"]);

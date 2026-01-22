@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 $user_id = $_SESSION['user_id'];
-
 $user_sql = "SELECT * FROM users WHERE id='$user_id'";
 $user_res = mysqli_query($conn, $user_sql);
 $user = mysqli_fetch_assoc($user_res);
@@ -24,36 +23,64 @@ $address = ($row = mysqli_fetch_assoc($addr_res)) ? $row['address_line'] : "";
     <title>Admin Profile</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        body { background-color: #f4f6f9; margin: 0; }
+        body { background-color: #f4f6f9; margin: 0; overflow: hidden; }
         
-        .admin-header { background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: #2c3e50; color: white; min-height: 100vh; }
+        .admin-header { 
+            background: #343a40; 
+            color: white; 
+            padding: 0 30px; 
+            height: 70px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .admin-container { display: flex; }
+        
+        .sidebar { 
+            width: 260px; 
+            background: #2c3e50; 
+            color: white; 
+            position: fixed; 
+            top: 70px; 
+            left: 0; 
+            bottom: 0;
+            overflow-y: auto;
+        }
+        
         .sidebar a { display: block; color: #b8c7ce; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #3d566e; }
         .sidebar a:hover, .sidebar a.active { background: #1abc9c; color: white; border-left: 5px solid #16a085; }
-        .main-content { flex: 1; padding: 30px; }
+        
+        .main-content { 
+            flex: 1; 
+            padding: 30px; 
+            margin-top: 70px; 
+            margin-left: 260px; 
+            height: calc(100vh - 70px); 
+            overflow-y: auto; 
+            box-sizing: border-box;
+        }
 
         .profile-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto; }
-        
         .profile-header-sec { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
         .profile-img-display { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #343a40; }
         .default-avatar { width: 100px; height: 100px; border-radius: 50%; background: #343a40; color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; border: 3px solid #eee; }
-
         .form-section { margin-bottom: 30px; }
         .form-section h3 { color: #333; margin-bottom: 15px; border-left: 4px solid #343a40; padding-left: 10px; }
-        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: 1 / -1; }
-        
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-
         .btn-update { background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
         .btn-update:hover { background: #2980b9; }
-        
         .btn-pass { background: #e74c3c; } 
         .btn-pass:hover { background: #c0392b; }
-
         .alert-msg { padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center; }
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
@@ -61,15 +88,15 @@ $address = ($row = mysqli_fetch_assoc($addr_res)) ? $row['address_line'] : "";
 </head>
 <body>
 
-    <div class="admin-header" style="background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <h2>Admin Panel</h2>
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
-            Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
-        </a>
-        <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+    <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
+                Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
+            </a>
+            <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+        </div>
     </div>
-</div>
 
     <div class="admin-container">
         <div class="sidebar">
@@ -83,7 +110,6 @@ $address = ($row = mysqli_fetch_assoc($addr_res)) ? $row['address_line'] : "";
         </div>
 
         <div class="main-content">
-            
             <div class="profile-box">
                 <h2 style="margin-top: 0; margin-bottom: 20px;">My Profile</h2>
 
@@ -157,9 +183,7 @@ $address = ($row = mysqli_fetch_assoc($addr_res)) ? $row['address_line'] : "";
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
-
 </body>
 </html>

@@ -91,7 +91,7 @@ if (isset($_POST['login_btn'])) {
                 if(isset($_COOKIE['user_email'])){
                     setcookie("user_email", "", time() - 3600, "/");
                 }
-
+                
                 $params = session_get_cookie_params();
                 setcookie(session_name(), session_id(), 0, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
             }
@@ -116,7 +116,6 @@ if (isset($_POST['login_btn'])) {
 }
 
 if (isset($_GET['logout'])) {
-    
     session_unset();
     session_destroy();
 

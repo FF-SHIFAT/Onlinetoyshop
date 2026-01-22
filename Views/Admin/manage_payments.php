@@ -17,13 +17,49 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
     <title>Manage Payments</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        body { background-color: #f4f6f9; }
-        .admin-header { background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: #2c3e50; color: white; min-height: 100vh; }
+        body { background-color: #f4f6f9; margin: 0; overflow: hidden; }
+        
+        .admin-header { 
+            background: #343a40; 
+            color: white; 
+            padding: 0 30px; 
+            height: 70px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .admin-container { display: flex; }
+        
+        .sidebar { 
+            width: 260px; 
+            background: #2c3e50; 
+            color: white; 
+            position: fixed; 
+            top: 70px; 
+            left: 0; 
+            bottom: 0;
+            overflow-y: auto;
+        }
+        
         .sidebar a { display: block; color: #b8c7ce; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #3d566e; }
         .sidebar a:hover, .sidebar a.active { background: #1abc9c; color: white; border-left: 5px solid #16a085; }
-        .main-content { flex: 1; padding: 30px; }
+        
+        .main-content { 
+            flex: 1; 
+            padding: 30px; 
+            margin-top: 70px; 
+            margin-left: 260px; 
+            height: calc(100vh - 70px); 
+            overflow-y: auto; 
+            box-sizing: border-box;
+        }
         
         .form-box { background: white; padding: 25px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .form-box h3 { margin-top: 0; color: #333; }
@@ -42,7 +78,7 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
         .btn-edit { background: #f39c12; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 13px; margin-right: 5px; cursor: pointer; border: none; }
         .btn-del { background: #e74c3c; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 13px; }
         
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal { display: none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: white; margin: 10% auto; padding: 25px; border-radius: 8px; width: 40%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .close-btn { position: absolute; top: 10px; right: 20px; font-size: 25px; cursor: pointer; color: #aaa; }
         .close-btn:hover { color: black; }
@@ -50,15 +86,15 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
 </head>
 <body>
 
-    <div class="admin-header" style="background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <h2>Admin Panel</h2>
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
-            Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
-        </a>
-        <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+    <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="profile.php" style="color: white; font-weight: bold; text-decoration: none;">
+                Welcome, <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Admin'; ?>
+            </a>
+            <a href="../../Controllers/authControl.php?logout=true" style="background: red; padding: 8px 15px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;">Logout</a>
+        </div>
     </div>
-</div>
 
     <div class="admin-container">
         <div class="sidebar">
@@ -93,11 +129,7 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
 
             <table>
                 <thead>
-                    <tr>
-                        <th>Method Name</th>
-                        <th>Account Details</th>
-                        <th style="width: 150px;">Action</th>
-                    </tr>
+                    <tr><th>Method Name</th><th>Account Details</th><th style="width: 150px;">Action</th></tr>
                 </thead>
                 <tbody>
                     <?php 
@@ -109,14 +141,10 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
                         <td><?php echo $row['account_number']; ?></td>
                         <td>
                             <button class="btn-edit" onclick="openEditModal('<?php echo $row['id']; ?>', '<?php echo $row['method_name']; ?>', '<?php echo $row['account_number']; ?>')">Edit</button>
-                            
                             <a href="../../Controllers/paymentControl.php?delete_id=<?php echo $row['id']; ?>" class="btn-del" onclick="return confirm('Are you sure you want to delete this method?');">Delete</a>
                         </td>
                     </tr>
-                    <?php 
-                        endwhile; 
-                    else:
-                    ?>
+                    <?php endwhile; else: ?>
                         <tr><td colspan="3" style="text-align:center; padding: 20px;">No payment methods found. Add one above!</td></tr>
                     <?php endif; ?>
                 </tbody>
@@ -128,20 +156,10 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h3 style="border-bottom: 2px solid #f39c12; padding-bottom: 10px; display: inline-block;">Edit Payment Method</h3>
-            
             <form action="../../Controllers/paymentControl.php" method="POST" style="margin-top: 20px;">
                 <input type="hidden" name="id" id="edit_id">
-                
-                <div class="inp-group">
-                    <label>Method Name</label>
-                    <input type="text" name="name" id="edit_name" required>
-                </div>
-                
-                <div class="inp-group">
-                    <label>Account Details</label>
-                    <input type="text" name="details" id="edit_details" required>
-                </div>
-                
+                <div class="inp-group"><label>Method Name</label><input type="text" name="name" id="edit_name" required></div>
+                <div class="inp-group"><label>Account Details</label><input type="text" name="details" id="edit_details" required></div>
                 <button type="submit" name="update_method" style="width: 100%; padding: 10px; background: #f39c12; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px;">Update Method</button>
             </form>
         </div>
@@ -152,21 +170,10 @@ $result = mysqli_query($conn, "SELECT * FROM payment_methods");
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_details').value = details;
-            
             document.getElementById('editModal').style.display = 'block';
         }
-
-        function closeModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            var modal = document.getElementById('editModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+        function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+        window.onclick = function(event) { var modal = document.getElementById('editModal'); if (event.target == modal) { modal.style.display = "none"; } }
     </script>
-
 </body>
 </html>

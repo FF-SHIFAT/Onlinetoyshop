@@ -14,19 +14,86 @@ $result = mysqli_query($conn, $sql);
     <link rel="stylesheet" href="Views/css/style.css">
     
     <style>
-        .hero { background: #343a40; color: white; padding: 40px 0; text-align: center; margin-bottom: 30px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
-        .product-card { background: white; border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .card-link { text-decoration: none; color: inherit; flex-grow: 1; display: flex; flex-direction: column; }
-        .product-img { width: 100%; height: 220px; object-fit: contain; padding: 20px; background: #fdfdfd; border-bottom: 1px solid #f0f0f0; }
-        .p-info { padding: 15px; text-align: center; flex-grow: 1; }
-        .price { color: #ff6f61; font-weight: bold; font-size: 20px; margin: 5px 0; }
-        .btn-group { display: flex; padding: 15px; gap: 10px; background: #fff; border-top: 1px solid #f0f0f0; }
-        .btn-group form { flex: 1; display: flex; }
-        .btn-action { width: 100%; padding: 12px 0; border: none; border-radius: 6px; color: white; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
-        .btn-cart { background: #333; }
-        .btn-buy { background: #e67e22; }
+        .hero { 
+            background: #343a40; 
+            color: white; 
+            padding: 40px 0; 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+            gap: 25px; 
+        }
+        .product-card { 
+            background: white; 
+            border: 1px solid #eee; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            transition: 0.3s; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .product-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+        }
+        .card-link { 
+            text-decoration: none; 
+            color: inherit; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .product-img { 
+            width: 100%; 
+            height: 220px; 
+            object-fit: contain; 
+            padding: 20px; 
+            background: #fdfdfd; 
+            border-bottom: 1px solid #f0f0f0; 
+        }
+        .p-info { 
+            padding: 15px; 
+            text-align: center; 
+            flex-grow: 1; 
+        }
+        .price { 
+            color: #ff6f61; 
+            font-weight: bold; 
+            font-size: 20px; 
+            margin: 5px 0; 
+        }
+        .btn-group { 
+            display: flex; 
+            padding: 15px; 
+            gap: 10px; 
+            background: #fff; 
+            border-top: 1px solid #f0f0f0;
+         }
+        .btn-group form { 
+            flex: 1; 
+            display: flex; 
+        }
+        .btn-action { 
+            width: 100%; 
+            padding: 12px 0; 
+            border: none; 
+            border-radius: 6px; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 16px; 
+            transition: 0.3s; 
+        }
+        .btn-cart { 
+            background: #333; 
+        }
+        .btn-buy { 
+            background: #e67e22; 
+        }
     </style>
 </head>
 <body>
@@ -65,9 +132,7 @@ $result = mysqli_query($conn, $sql);
 
     <div class="container">
         <h2 style="margin-bottom: 20px; border-bottom: 2px solid #ff6f61; display: inline-block;">Latest Collection</h2>
-        
         <div id="search_result" class="product-grid" style="display:none;"></div>
-
         <div id="original_list" class="product-grid">
             <?php 
             if(mysqli_num_rows($result) > 0):
